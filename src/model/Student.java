@@ -1,12 +1,12 @@
 package model;
 
 public class Student  {
-    String codeStudent ;
-    String fullName ;
-    int age ;
-    String gender ;
-    String address ;
-    double averageScore ;
+    private String codeStudent ;
+    private String fullName ;
+    private int age ;
+    private String gender ;
+    private String address ;
+    private double averageScore ;
 
     public Student() {
     }

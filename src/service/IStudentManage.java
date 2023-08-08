@@ -10,6 +10,8 @@ public interface IStudentManage <E> {
     void arrange();
     List<E> read () ;
     void write (List <E> list);
+    void writeToFile ();
+    void readToFile () ;
 
 
 }

@@ -1,23 +1,25 @@
 package service.ipl;
 
+import model.SortDown;
+import model.SortUp;
 import model.Student;
 import service.IStudentManage;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
 public class StudentManagement implements IStudentManage<Student> {
-    private List <Student>  studentList = new ArrayList<>();
+    private List <Student>  studentList ;
     private Scanner sc ;
-    private String PATH = "C:\\Users\\min\\IdeaProjects\\thucHanh\\src\\io\\listStudent.csv";
+    private String PATH ;
 
     public StudentManagement( Scanner sc) {
         this.sc = sc;
+        studentList = new ArrayList<>() ;
+        PATH = "C:\\Users\\min\\IdeaProjects\\thucHanh\\src\\io\\listStudent.csv" ;
     }
 
     @Override
@@ -180,6 +182,7 @@ public class StudentManagement implements IStudentManage<Student> {
 
     @Override
     public void arrange() {
+        List <Student> students = studentList;
         System.out.println("------Sắp xếp sinh viên theo điểm trung bình ------------");
         System.out.println("Chọn chức năng theo số để tiếp tục");
         System.out.println("1. Sắp xếp điểm trung bình tăng dần");
@@ -189,27 +192,80 @@ public class StudentManagement implements IStudentManage<Student> {
          int choice = Integer.parseInt(sc.nextLine());
          switch (choice) {
              case 1 :
-
+                 Collections.sort(students ,new SortUp());
+                 for (int i = 0; i < students.size(); i++) {
+                     System.out.println(i+1 + ": ");
+                     System.out.println(students.get(i));
+                 }
+                 break;
+             case 2 :
+                 Collections.sort(students ,new SortDown());
+                 for (int i = 0; i < students.size(); i++) {
+                     System.out.println(i+1 + ": ");
+                     System.out.println(students.get(i));
+                 }
+                 break ;
          }
      }
 
     @Override
     public List<Student> read() {
-
-        return null;
+        List <Student> Student = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(PATH))) {
+            String headLine = reader.readLine();
+            String line ;
+            while ((line = reader.readLine())!= null){
+                String [] data = line.split(",");
+                 String codeStudent = data [0] ;
+                 String fullName = data [1] ;
+                 int age = Integer.parseInt(data[2]) ;
+                 String gender = data[3] ;
+                 String address = data [4] ;
+                 double averageScore = Double.parseDouble(data[5]) ;
+                 Student.add(new Student(codeStudent,fullName,age,gender,address,averageScore));
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+       return Student ;
     }
 
     @Override
     public void write(List<Student> list) {
-        try{
-            File file = new File(PATH);
-            FileInputStream fileInputStream =new FileInputStream(file);
-            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-             objectInputStream.readObject();
-        } catch (Exception e) {
+        try (FileWriter fileWriter = new FileWriter(PATH)){
+            fileWriter.append("Mã sinh viên , Họ tên , Tuổi ,Giới tính , Địa chỉ ,Điểm trung bình \n");
+            for (Student student :
+                    studentList) {
+                fileWriter.append(student.getCodeStudent()).append(",").append(student.getFullName()).append(",").append(student.getAge()+"").append(",").append(student.getGender()).append(",").append(student.getAddress()).append(",").append(student.getAverageScore()+ "").append("\n");
+            }
+        }catch (Exception e){
             e.printStackTrace();
         }
+    }
 
+    @Override
+    public void writeToFile() {
+        System.out.println("Bạn có muốn cập nhật lại File");
+        System.out.println("Nhấn Y để xác nhận cập nhật File");
+        System.out.println("Nhấn phím bất kì để quay lại");
+        if(sc.nextLine().equals("Y")){
+            write(studentList);
+            System.out.println("Cập nhật thành công");
+            display();
+        }
+    }
+
+    @Override
+    public void readToFile() {
+        System.err.println("Cảnh báo đọc File :");
+        System.err.println("toàn bộ danh sách sinh viên đang có trong bộ nhớ sẽ bị xóa");
+        System.out.println("Nhấn Y để xác nhận đọc File");
+        System.out.println("Nhấn phím bất kì để quay lại");
+        if(sc.nextLine().equals("Y")){
+            studentList= read();
+            System.out.println("Đọc thành công");
+            display();
+        }
     }
 
 }

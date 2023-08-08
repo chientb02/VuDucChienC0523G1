@@ -36,6 +36,12 @@ public class Main {
                 case 5 :
                     studentManagement.arrange();
                     break ;
+                case 6 :
+                    studentManagement.readToFile();
+                    break ;
+                case 7:
+                    studentManagement.writeToFile();
+                    break ;
             }
         }while (choice!=0);
 
